@@ -80,7 +80,7 @@ int main(int argc, const char **argv) {
                 int iterations = 0;
                 while ( (z_squared.real + z_squared.imaginary <= 4) && iterations < Max_Iterations) {                                   
                     z.imaginary = 2 * z.real * z.imaginary;
-                    z.imaginary += z.imaginary;
+                    //z.imaginary += z.imaginary;
                     z.imaginary += c.imaginary;
 
                     z.real = z_squared.real - z_squared.imaginary + c.real;
@@ -92,16 +92,16 @@ int main(int argc, const char **argv) {
                 }
 
 
-                if(iterations < Max_Iterations){
+                //if(iterations < Max_Iterations){
                     pixels[img_y * Image_Width + img_x][0] = colors[iterations][0];
                     pixels[img_y * Image_Width + img_x][1] = colors[iterations][1];
                     pixels[img_y * Image_Width + img_x][2] = colors[iterations][2];
 
-                } else { // Draw white if not in Mandelbrot set
+                /*} else { // Draw white if not in Mandelbrot set
                     pixels[img_y * Image_Width + img_x][0] = 0;
                     pixels[img_y * Image_Width + img_x][1] = 0;
                     pixels[img_y * Image_Width + img_x][2] = 0;
-                }
+                }*/
 
             }
         }
