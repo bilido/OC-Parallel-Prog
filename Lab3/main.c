@@ -1,10 +1,9 @@
-
-
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
 #include <omp.h>
+#include <sys/time.h>
 
 typedef struct Complex {
     long double real;
@@ -61,51 +60,50 @@ int main(int argc, const char **argv) {
             .imaginary = (max_bounds.real - min_bounds.real) / Image_Height
     };
 
-# pragma omp parallel for shared(pixels)
-        // Loop through the image pixels
-        for (int img_y = 0; img_y < Image_Height; img_y++) {
-            
-            for (int img_x = 0; img_x < Image_Width; img_x++) {
-                // Find the value of C in the Mandelbrot range corresponding to this pixel
-                Complex c = {
-                        .real = min_bounds.real + img_x * scale.real,
-                        .imaginary = min_bounds.imaginary + img_y * scale.imaginary
-                };
+	struct timeval start, end;
+    printf("Mandelbrot parallel...\n");
+    gettimeofday(&start, NULL);
+	
+# pragma omp parallel for schedule(dynamic) \
+        shared(pixels) collapse(2)
+	// Loop through the image pixels
+	for (int img_y = 0; img_y < Image_Height; img_y++) {
+		
+		for (int img_x = 0; img_x < Image_Width; img_x++) {
+			// Find the value of C in the Mandelbrot range corresponding to this pixel
+			Complex c = {
+					.real = min_bounds.real + img_x * scale.real,
+					.imaginary = min_bounds.imaginary + img_y * scale.imaginary
+			};
 
-                // Check if the current pixel is in the Mandelbrot set
-                // We use the optimizations from https://randomascii.wordpress.com/2011/08/13/faster-fractals-through-algebra/
-                Complex z = {.real = 0, .imaginary = 0};
-                Complex z_squared = {.real = 0, .imaginary = 0};
+			// Check if the current pixel is in the Mandelbrot set
+			// We use the optimizations from https://randomascii.wordpress.com/2011/08/13/faster-fractals-through-algebra/
+			Complex z = {.real = 0, .imaginary = 0};
+			Complex z_squared = {.real = 0, .imaginary = 0};
 
-                int iterations = 0;
-                while ( (z_squared.real + z_squared.imaginary <= 4) && iterations < Max_Iterations) {                                   
-                    z.imaginary = 2 * z.real * z.imaginary;
-                    //z.imaginary += z.imaginary;
-                    z.imaginary += c.imaginary;
+			int iterations = 0;
+			while ( (z_squared.real + z_squared.imaginary <= 4) && iterations < Max_Iterations) {                                   
+				z.imaginary = 2 * z.real * z.imaginary;
+				//z.imaginary += z.imaginary;
+				z.imaginary += c.imaginary;
 
-                    z.real = z_squared.real - z_squared.imaginary + c.real;
+				z.real = z_squared.real - z_squared.imaginary + c.real;
 
-                    z_squared.real = z.real * z.real;
-                    z_squared.imaginary = z.imaginary * z.imaginary;
+				z_squared.real = z.real * z.real;
+				z_squared.imaginary = z.imaginary * z.imaginary;
 
-                    iterations++;
-                }
+				iterations++;
+			}
 
+			pixels[img_y * Image_Width + img_x][0] = colors[iterations][0];
+			pixels[img_y * Image_Width + img_x][1] = colors[iterations][1];
+			pixels[img_y * Image_Width + img_x][2] = colors[iterations][2];
 
-                //if(iterations < Max_Iterations){
-                    pixels[img_y * Image_Width + img_x][0] = colors[iterations][0];
-                    pixels[img_y * Image_Width + img_x][1] = colors[iterations][1];
-                    pixels[img_y * Image_Width + img_x][2] = colors[iterations][2];
-
-                /*} else { // Draw white if not in Mandelbrot set
-                    pixels[img_y * Image_Width + img_x][0] = 0;
-                    pixels[img_y * Image_Width + img_x][1] = 0;
-                    pixels[img_y * Image_Width + img_x][2] = 0;
-                }*/
-
-            }
-        }
-
+		}
+	}
+	
+	gettimeofday(&end, NULL);
+    printf("Took %f seconds\n\n", end.tv_sec - start.tv_sec + (double) (end.tv_usec - start.tv_usec) / 1000000);
 
     FILE *fp = fopen("MandelbrotSet.ppm", "wb");
     fprintf(fp, "P6\n %d %d\n %d\n", Image_Width, Image_Height, MAX_RGB_VAL);
