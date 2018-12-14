@@ -31,7 +31,7 @@ long double Calculate_Pi_Parallel(long long number_of_tosses) {
     long long int number_of_hits_in_circle = 0;
     double x, y, distance_squared;
 
-#pragma omp parallel for num_threads(number_of_tosses) \
+#pragma omp parallel for num_threads(omp_get_max_threads()) \
      reduction(+: number_of_hits_in_circle) private(x, y, distance_squared)
         for (long toss = 0; toss < number_of_tosses; toss++) {
             x = getRand();
