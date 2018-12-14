@@ -63,12 +63,12 @@ int main(int argc, const char **argv) {
 
 # pragma omp parallel shared(pixels)
     {
-        int img_y;
+  
     #pragma omp parallel for
         // Loop through the image pixels
-        for (img_y = 0; img_y < Image_Height; img_y++) {
-            int img_x;
-            for (img_x = 0; img_x < Image_Width; img_x++) {
+        for (int img_y = 0; img_y < Image_Height; img_y++) {
+            
+            for (int img_x = 0; img_x < Image_Width; img_x++) {
                 // Find the value of C in the Mandelbrot range corresponding to this pixel
                 Complex c = {
                         .real = min_bounds.real + img_x * scale.real,
