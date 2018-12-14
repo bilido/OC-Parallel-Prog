@@ -102,7 +102,7 @@ int main(int argc, const char **argv) {
 		}
 	}
 	
-	gettimeofday(&end, NULL);
+    gettimeofday(&end, NULL);
     printf("Took %f seconds\n\n", end.tv_sec - start.tv_sec + (double) (end.tv_usec - start.tv_usec) / 1000000);
 
     FILE *fp = fopen("MandelbrotSet.ppm", "wb");
