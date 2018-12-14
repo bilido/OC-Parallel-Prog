@@ -58,7 +58,7 @@ int main(int argc, const char **argv) {
     const Complex max_bounds = {.real = Focus_Point.real + Zoom, .imaginary = Focus_Point.imaginary + Zoom};
     const Complex scale = {
             .real = (max_bounds.real - min_bounds.real) / Image_Width,
-            .imaginary = (max_bounds.imaginary - min_bounds.imaginary) / Image_Height
+            .imaginary = (max_bounds.real - min_bounds.real) / Image_Height
     };
 
 # pragma omp parallel shared(pixels)
