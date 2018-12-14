@@ -61,10 +61,7 @@ int main(int argc, const char **argv) {
             .imaginary = (max_bounds.real - min_bounds.real) / Image_Height
     };
 
-# pragma omp parallel shared(pixels)
-    {
-  
-    #pragma omp parallel for
+# pragma omp parallel for shared(pixels)
         // Loop through the image pixels
         for (int img_y = 0; img_y < Image_Height; img_y++) {
             
@@ -81,9 +78,7 @@ int main(int argc, const char **argv) {
                 Complex z_squared = {.real = 0, .imaginary = 0};
 
                 int iterations = 0;
-                while ( (z_squared.real + z_squared.imaginary <= 4) && iterations < Max_Iterations) {
-
-                                       
+                while ( (z_squared.real + z_squared.imaginary <= 4) && iterations < Max_Iterations) {                                   
                     z.imaginary = 2 * z.real * z.imaginary;
                     z.imaginary += z.imaginary;
                     z.imaginary += c.imaginary;
@@ -110,7 +105,6 @@ int main(int argc, const char **argv) {
 
             }
         }
-    }
 
 
     FILE *fp = fopen("MandelbrotSet.ppm", "wb");
