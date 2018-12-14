@@ -85,7 +85,7 @@ int main(int argc, const char **argv) {
 
                                        
                     z.imaginary = 2 * z.real * z.imaginary;
-                    //z.imaginary += z.imaginary;
+                    z.imaginary += z.imaginary;
                     z.imaginary += c.imaginary;
 
                     z.real = z_squared.real - z_squared.imaginary + c.real;
